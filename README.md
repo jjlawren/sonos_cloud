@@ -43,6 +43,15 @@ data:
     volume: 35
 ```
 
+A special `media_content_id` of "CHIME" can be used to test the integration using the built-in sound provided by Sonos. This can be useful for validation if your own URLs are not playing correctly:
+```yaml
+service: media_player.play_media
+data:
+  entity_id: media_player.kitchen
+  media_content_id: CHIME
+  media_content_type: music
+```
+
 # Limitations
 
 Only a single Sonos household is supported at the moment. If you have a split S1/S2 system, not all speakers will be visible.
