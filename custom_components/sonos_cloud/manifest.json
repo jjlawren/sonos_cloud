@@ -1,0 +1,18 @@
+{
+  "domain": "sonos_cloud",
+  "name": "Sonos Cloud",
+  "config_flow": true,
+  "documentation": "https://github.com/jjlawren/sonos_cloud/blob/main/README.md",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [
+    "http"
+  ],
+  "codeowners": [
+    "@jjlawren"
+  ],
+  "iot_class": "cloud_push",
+  "version": "0.0.1"
+}
