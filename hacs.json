@@ -1,0 +1,8 @@
+{
+  "name": "Sonos Cloud",
+  "country": "US",
+  "domains": ["media_player"],
+  "homeassistant": "2021.7.0",
+  "render_readme": true,
+  "iot_class": "Cloud Polling"
+}

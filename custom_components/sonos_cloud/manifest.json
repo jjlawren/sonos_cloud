@@ -2,7 +2,8 @@
   "domain": "sonos_cloud",
   "name": "Sonos Cloud",
   "config_flow": true,
-  "documentation": "https://github.com/jjlawren/sonos_cloud/blob/main/README.md",
+  "documentation": "https://github.com/jjlawren/sonos_cloud/",
+  "issue_tracker": "https://github.com/jjlawren/sonos_cloud/issues",
   "requirements": [],
   "ssdp": [],
   "zeroconf": [],
@@ -13,6 +14,6 @@
   "codeowners": [
     "@jjlawren"
   ],
-  "iot_class": "cloud_push",
+  "iot_class": "cloud_polling",
   "version": "0.0.1"
 }
