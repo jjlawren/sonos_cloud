@@ -34,6 +34,7 @@ PLATFORMS = ["media_player"]
 async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Set up the Sonos Cloud component."""
     hass.data[DOMAIN] = {}
+    hass.data[DOMAIN][PLAYERS] = []
 
     if DOMAIN not in config:
         return True
@@ -68,13 +69,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     result = await session.async_request("get", url)
     json = await result.json()
     households = json.get("households")
-    if len(households) > 1:
-        _LOGGER.warn("Multiple households linked to account: %s", households)
 
-    household = households[0]["id"]
-    _LOGGER.debug("Using household: %s", household)
-
-    async def async_update_players():
+    async def async_get_available_players(household):
         url = f"https://api.ws.sonos.com/control/api/v1/households/{household}/groups"
         result = await session.async_request("get", url)
         json = await result.json()
@@ -92,7 +88,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         return available_players
 
-    hass.data[DOMAIN][PLAYERS] = await async_update_players()
+    for household in households:
+        household_id = household["id"]
+        players = await async_get_available_players(household_id)
+        _LOGGER.debug(
+            "Adding players for household %s: %s",
+            household_id,
+            [player["name"] for player in players],
+        )
+        hass.data[DOMAIN][PLAYERS].extend(players)
+
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
     return True
