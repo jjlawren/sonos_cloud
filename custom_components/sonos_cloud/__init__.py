@@ -79,7 +79,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         result = await session.async_request("get", url)
         json = await result.json()
         _LOGGER.debug("Result: %s", json)
-        return json["players"]
+        all_players = json["players"]
+        available_players = []
+
+        for player in all_players:
+            if "AUDIO_CLIP" in player["capabilities"]:
+                available_players.append(player)
+            else:
+                _LOGGER.warning(
+                    "%s (%s) does not support AUDIO_CLIP", player["name"], player["id"]
+                )
+
+        return available_players
 
     hass.data[DOMAIN][PLAYERS] = await async_update_players()
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
