@@ -61,8 +61,6 @@ data:
 
 # Limitations
 
-Only a single Sonos household is supported at the moment. If you have a split S1/S2 system, not all speakers will be visible.
-
 Audio clips must be publicly accessible. If serving files from your Home Assistant instance (e.g., from the `/www/` config directory or via TTS integrations), the base URLs must be reachable from outside your network. This is easiest when using a Nabu Casa cloud URL.
 
 For example, to configure the `cloud` TTS integration to use external URLs:
