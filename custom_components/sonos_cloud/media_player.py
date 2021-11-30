@@ -12,6 +12,7 @@ from homeassistant.components.media_player.const import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_IDLE
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, PLAYERS, SESSION
@@ -65,7 +66,14 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity):
         _LOGGER.info("Playing %s", media_id)
         if extra := kwargs.get(ATTR_MEDIA_EXTRA):
             if volume := extra.get(ATTR_VOLUME):
-                data[ATTR_VOLUME] = volume
+                _LOGGER.info("Type of %s: %s", volume, type(volume))
+                if type(volume) not in (int, float):
+                    raise HomeAssistantError(f"Volume '{volume}' not a number")
+                if not 0 < volume <= 100:
+                    raise HomeAssistantError(f"Volume '{volume}' not in acceptable range of 0-100")
+                if volume < 1:
+                    volume = volume * 100
+                data[ATTR_VOLUME] = int(volume)
         if media_id != "CHIME":
             data["streamUrl"] = media_id
         session = self.hass.data[DOMAIN][SESSION]
