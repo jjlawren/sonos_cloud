@@ -47,7 +47,7 @@ data:
   media_content_id: https://<unique_cloud_id>.ui.nabu.casa/local/sound_files/doorbell.mp3
   media_content_type: music
   extra:
-    volume: 35  # Can be provided as 0-100 or 0.0-1.0
+    volume: 35  # Can be provided as 0-100 or 0.0-0.99
 ```
 
 A special `media_content_id` of "CHIME" can be used to test the integration using the built-in sound provided by Sonos. This can be useful for validation if your own URLs are not playing correctly:
