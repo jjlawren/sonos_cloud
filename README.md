@@ -61,9 +61,23 @@ data:
 
 # Limitations
 
-Audio clips must be publicly accessible. If serving files from your Home Assistant instance (e.g., from the `/www/` config directory or via TTS integrations), the base URLs must be reachable from outside your network. This is easiest when using a Nabu Casa cloud URL.
+If you encounter issues playing audio when using this integration, it may be related to one of the following reasons.
 
-For example, to configure the `cloud` TTS integration to use external URLs:
+## Home theater & stereo pair configurations
+
+This API targets a specific speaker to play the alert and does not play on all speakers in a "room". For example, a stereo pair will only play back audio on the left speaker and a home theater setup will play from the "primary" speaker. This appears to be a current limitation of the Sonos API.
+
+## Media URLs
+
+If serving files from your Home Assistant instance (e.g., from the `/www/` config directory or via TTS integrations), the URLs must be resolvable and directly reachable from the Sonos speakers.
+
+Additionally, users have had mixed results when serving media from hosts with local IP addresses, even with valid DNS entries and certificates.
+
+### TTS
+
+To configure TTS integrations to use external URLs, set the `base_url` configuration option.
+
+Examples:
 ```yaml
 tts:
   - platform: cloud
@@ -71,3 +85,13 @@ tts:
     language: en-US
     gender: female
 ```
+or
+```yaml
+tts:
+  - platform: google_translate
+    base_url: 'https://xxxxxx.duckdns.org:8123'
+```
+
+## Secure connections
+
+Sonos devices have strict security requirements if served media over an SSL/TLS connection. See more details here: https://developer.sonos.com/build/content-service-get-started/security/.
