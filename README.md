@@ -71,8 +71,6 @@ This API targets a specific speaker to play the alert and does not play on all s
 
 If serving files from your Home Assistant instance (e.g., from the `/www/` config directory or via TTS integrations), the URLs must be resolvable and directly reachable from the Sonos speakers.
 
-Additionally, users have had mixed results when serving media from hosts with local IP addresses, even with valid DNS entries and certificates.
-
 ### TTS
 
 To configure TTS integrations to use external URLs, set the `base_url` configuration option.
