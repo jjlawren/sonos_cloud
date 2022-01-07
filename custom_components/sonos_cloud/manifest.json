@@ -11,9 +11,12 @@
   "dependencies": [
     "http"
   ],
+  "after_dependencies": [
+    "sonos"
+  ],
   "codeowners": [
     "@jjlawren"
   ],
   "iot_class": "cloud_polling",
-  "version": "0.0.4"
+  "version": "0.0.5"
 }
