@@ -9,10 +9,12 @@ from homeassistant.components.media_player.const import (
     ATTR_MEDIA_EXTRA,
     SUPPORT_PLAY_MEDIA,
 )
+from homeassistant.components.sonos.const import DOMAIN as SONOS_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_IDLE
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, PLAYERS, SESSION
@@ -49,6 +51,15 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity):
     def supported_features(self) -> int:
         """Flag media player features that are supported."""
         return SUPPORT_PLAY_MEDIA
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return information about the device."""
+        return DeviceInfo(
+            identifiers={(SONOS_DOMAIN, self.unique_id)},
+            manufacturer="Sonos",
+            name=self.name,
+        )
 
     async def async_play_media(
         self, media_type: str, media_id: str, **kwargs: Any
