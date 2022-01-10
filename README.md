@@ -39,7 +39,9 @@ data:
   message: "Hello there"
 ```
 
-Service calls to `media_player.play_media` can accept an optional `volume` parameter to play the clip at a different volume than the currently playing music:
+Service calls to `media_player.play_media` can accept optional parameters under `data`->`extra`:
+* `volume` will play the clip at a different volume than the currently playing music
+* `play_on_bonded` will play on all _bonded_ speakers in a "room" (see [notes](#home-theater--stereo-pair-configurations) below)
 ```yaml
 service: media_player.play_media
 data:
@@ -48,6 +50,7 @@ data:
   media_content_type: music
   extra:
     volume: 35  # Can be provided as 0-100 or 0.0-0.99
+    play_on_bonded: true
 ```
 
 A special `media_content_id` of "CHIME" can be used to test the integration using the built-in sound provided by Sonos. This can be useful for validation if your own URLs are not playing correctly:
@@ -65,7 +68,9 @@ If you encounter issues playing audio when using this integration, it may be rel
 
 ## Home theater & stereo pair configurations
 
-This API targets a specific speaker to play the alert and does not play on all speakers in a "room". For example, a stereo pair will only play back audio on the left speaker and a home theater setup will play from the "primary" speaker. This appears to be a current limitation of the Sonos API.
+A stereo pair will only play back audio on the left speaker and a home theater setup will play from the "primary" speaker. This is because of a limitation in the API which can only target a single speaker device at a time.
+
+When using the `play_on_bonded` extra key, the integration will attempt to play the audio on all bonded speakers in a "room" by making multiple simultaneous calls. Since playback may not be perfectly synchronized with this method it is not enabled by default.
 
 ## Media URLs
 

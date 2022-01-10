@@ -1,6 +1,7 @@
 """Support to interface with Sonos players."""
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 
@@ -23,6 +24,8 @@ _LOGGER = logging.getLogger(__name__)
 
 ATTR_VOLUME = "volume"
 
+AUDIO_CLIP_URI = "https://api.ws.sonos.com/control/api/v1/players/{device}/audioClip"
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -30,17 +33,19 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Sonos cloud from a config entry."""
-    for player in hass.data[DOMAIN][PLAYERS]:
-        async_add_entities([SonosCloudMediaPlayerEntity(player["name"], player["id"])])
+    async_add_entities(
+        [SonosCloudMediaPlayerEntity(player) for player in hass.data[DOMAIN][PLAYERS]]
+    )
 
 
 class SonosCloudMediaPlayerEntity(MediaPlayerEntity):
     """Representation of a Sonos Cloud entity."""
 
-    def __init__(self, zone_name, identifier):
+    def __init__(self, player: dict[str, Any]):
         """Initializle the entity."""
-        self._attr_name = zone_name
-        self._attr_unique_id = identifier
+        self._attr_name = player["name"]
+        self._attr_unique_id = player["id"]
+        self.zone_devices = player["deviceIds"]
 
     @property
     def state(self) -> str:
@@ -69,13 +74,16 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity):
 
         Used to play audio clips over the currently playing music.
         """
-        url = f"https://api.ws.sonos.com/control/api/v1/players/{self.unique_id}/audioClip"
         data = {
             "name": "HA Audio Clip",
             "appId": "jjlawren.home-assistant.sonos_cloud",
         }
+        devices = [self.unique_id]
         _LOGGER.info("Playing %s", media_id)
+
         if extra := kwargs.get(ATTR_MEDIA_EXTRA):
+            if extra.get("play_on_bonded"):
+                devices = self.zone_devices
             if volume := extra.get(ATTR_VOLUME):
                 _LOGGER.info("Type of %s: %s", volume, type(volume))
                 if type(volume) not in (int, float):
@@ -87,7 +95,14 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity):
                 data[ATTR_VOLUME] = int(volume)
         if media_id != "CHIME":
             data["streamUrl"] = media_id
+
         session = self.hass.data[DOMAIN][SESSION]
-        result = await session.async_request("post", url, json=data)
-        json = await result.json()
-        _LOGGER.debug("Result: %s", json)
+        requests = []
+
+        for device in devices:
+            url = AUDIO_CLIP_URI.format(device=device)
+            requests.append(session.async_request("post", url, json=data))
+        results = await asyncio.gather(*requests, return_exceptions=True)
+        for result in results:
+            json = await result.json()
+            _LOGGER.debug("Response for %s: %s", result.url, json)
