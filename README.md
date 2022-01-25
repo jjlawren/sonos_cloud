@@ -66,6 +66,10 @@ data:
 
 If you encounter issues playing audio when using this integration, it may be related to one of the following reasons.
 
+## Device support
+
+Some device models may not support the `audioClip` feature or will only provide limited support. For example, some older models on S1 firmware may not support this feature at all. A warning message will be logged during startup for each unsupported device. Other speakers (e.g., Play:1 speakers) may support a stripped-down version of the feature which does not overlay the alert audio on top of playing music, but instead will pause/resume the background audio.
+
 ## Home theater & stereo pair configurations
 
 A stereo pair will only play back audio on the left speaker and a home theater setup will play from the "primary" speaker. This is because of a limitation in the API which can only target a single speaker device at a time.
