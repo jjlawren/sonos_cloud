@@ -30,6 +30,10 @@ On the Integrations page in Home Assistant, add a new "Sonos Cloud" integration.
 
 The integration will create new `media_player` entities for each Sonos device in your household. These are created in order to use the `tts.<platform>_say` and `media_player.play_media` services to play the clips.
 
+## Media Browser & Media Source
+
+Support for browsing and playing back local audio clips using the Media Browser is supported. [Media Source](https://www.home-assistant.io/integrations/media_source/) URLs for local media and TTS can also be provided to `media_player.play_media`.
+
 ## Volume control
 
 The playback volume can be set per audio clip and will automatically revert to the previous level when the clip finishes playing. The volume used is chosen in the following order:
@@ -37,16 +41,9 @@ The playback volume can be set per audio clip and will automatically revert to t
 2. Use the volume on the `media_player` entity created by this integration. This default can be disabled by setting the volume slider back to 0. Note that this volume slider _only_ affects the default audio clip playback volume.
 3. If neither of the above is provided, the current volume set on the speaker will be used.
 
-**Note**: Volume adjustments only work with the `media_player.play_media` service call.
+**Note**: Volume adjustments only work with the `media_player.play_media` service call. For TTS volume control, use `media_player.play_media` with a [Media Source](https://www.home-assistant.io/integrations/media_source/) TTS URL (see below).
 
 # Examples
-
-```yaml
-service: tts.cloud_say
-data:
-  entity_id: media_player.front_room
-  message: "Hello there"
-```
 
 Service calls to `media_player.play_media` can accept optional parameters under `data`->`extra`:
 * `volume` will play the clip at a different volume than the currently playing music
@@ -60,6 +57,34 @@ data:
   extra:
     volume: 35  # Can be provided as 0-100 or 0.0-0.99
     play_on_bonded: true
+```
+
+[Media Source](https://www.home-assistant.io/integrations/media_source/) URLs are supported:
+```yaml
+service: media_player.play_media
+data:
+  entity_id: media_player.kitchen
+  media_content_id: media-source://media_source/local/doorbell.mp3
+  media_content_type: music
+```
+
+TTS volume controls can be used with a Media Source TTS URL:
+```yaml
+service: media_player.play_media
+data:
+  entity_id: media_player.kitchen
+  media_content_id: media-source://tts/cloud?message=I am very loud
+  media_content_type: music
+  extra:
+    volume: 80
+```
+
+"Standard" TTS service calls can also be used, but the extra parameters cannot be used:
+```yaml
+service: tts.cloud_say
+data:
+  entity_id: media_player.front_room
+  message: "Hello there"
 ```
 
 A special `media_content_id` of "CHIME" can be used to test the integration using the built-in sound provided by Sonos. This can be useful for validation if your own URLs are not playing correctly:
