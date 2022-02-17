@@ -94,7 +94,7 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
             "appId": "jjlawren.home-assistant.sonos_cloud",
         }
         devices = [self.unique_id]
-        _LOGGER.info("Playing %s", media_id)
+        _LOGGER.debug("Playing %s on %s", media_id, self.name)
 
         if extra := kwargs.get(ATTR_MEDIA_EXTRA):
             if extra.get("play_on_bonded"):
