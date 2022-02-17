@@ -30,7 +30,16 @@ On the Integrations page in Home Assistant, add a new "Sonos Cloud" integration.
 
 The integration will create new `media_player` entities for each Sonos device in your household. These are created in order to use the `tts.<platform>_say` and `media_player.play_media` services to play the clips.
 
-## Examples
+## Volume control
+
+The playback volume can be set per audio clip and will automatically revert to the previous level when the clip finishes playing. The volume used is chosen in the following order:
+1. Use `data`->`extra`->`volume` if provided in the `media_player.play_media` call.
+2. Use the volume on the `media_player` entity created by this integration. This default can be disabled by setting the volume slider back to 0. Note that this volume slider _only_ affects the default audio clip playback volume.
+3. If neither of the above is provided, the current volume set on the speaker will be used.
+
+**Note**: Volume adjustments only work with the `media_player.play_media` service call.
+
+# Examples
 
 ```yaml
 service: tts.cloud_say
