@@ -12,6 +12,7 @@
     "http"
   ],
   "after_dependencies": [
+    "media_source",
     "sonos"
   ],
   "codeowners": [

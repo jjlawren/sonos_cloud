@@ -5,12 +5,20 @@ import asyncio
 import logging
 from typing import Any
 
-from homeassistant.components.media_player import MediaPlayerEntity
+from homeassistant.components import media_source
+from homeassistant.components.media_player import (
+    BrowseMedia,
+    MediaPlayerEntity,
+    async_process_play_media_url,
+)
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_EXTRA,
+    MEDIA_CLASS_DIRECTORY,
+    SUPPORT_BROWSE_MEDIA,
     SUPPORT_PLAY_MEDIA,
     SUPPORT_VOLUME_SET,
 )
+from homeassistant.components.media_player.errors import BrowseError
 from homeassistant.components.sonos.const import DOMAIN as SONOS_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_IDLE
@@ -71,7 +79,7 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     @property
     def supported_features(self) -> int:
         """Flag media player features that are supported."""
-        return SUPPORT_PLAY_MEDIA | SUPPORT_VOLUME_SET
+        return SUPPORT_BROWSE_MEDIA | SUPPORT_PLAY_MEDIA | SUPPORT_VOLUME_SET
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -94,6 +102,12 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
 
         Used to play audio clips over the currently playing music.
         """
+        if media_source.is_media_source_id(media_id):
+            media_source_item = await media_source.async_resolve_media(
+                self.hass, media_id
+            )
+            media_id = async_process_play_media_url(self.hass, media_source_item.url)
+
         data = {
             "name": "HA Audio Clip",
             "appId": "jjlawren.home-assistant.sonos_cloud",
@@ -131,3 +145,51 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
         for result in results:
             json = await result.json()
             _LOGGER.debug("Response for %s: %s", result.url, json)
+
+    async def async_browse_media(
+        self, media_content_type: str | None = None, media_content_id: str | None = None
+    ) -> Any:
+        """Implement the websocket media browsing helper."""
+        if media_content_id is None:
+            return await root_payload(self.hass)
+
+        if media_source.is_media_source_id(media_content_id):
+            return await media_source.async_browse_media(
+                self.hass, media_content_id, content_filter=media_source_filter
+            )
+
+        raise BrowseError(f"Media not found: {media_content_type} / {media_content_id}")
+
+
+def media_source_filter(item: BrowseMedia):
+    """Filter media sources."""
+    return item.media_content_type.startswith("audio/")
+
+
+async def root_payload(
+    hass: HomeAssistant,
+):
+    """Return root payload for Sonos Cloud."""
+    children = []
+
+    try:
+        item = await media_source.async_browse_media(
+            hass, None, content_filter=media_source_filter
+        )
+        # If domain is None, it's overview of available sources
+        if item.domain is None:
+            children.extend(item.children)
+        else:
+            children.append(item)
+    except media_source.BrowseError:
+        pass
+
+    return BrowseMedia(
+        title="Sonos Cloud",
+        media_class=MEDIA_CLASS_DIRECTORY,
+        media_content_id="",
+        media_content_type="root",
+        can_play=False,
+        can_expand=True,
+        children=children,
+    )
