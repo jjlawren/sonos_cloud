@@ -53,8 +53,13 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     async def async_added_to_hass(self):
         """Complete entity setup."""
         await super().async_added_to_hass()
+        await self.async_restore_states()
 
-        last_state = await self.async_get_last_state()
+    async def async_restore_states(self) -> None:
+        """Restore last entity state."""
+        if (last_state := await self.async_get_last_state()) is None:
+            return
+
         if volume := last_state.attributes.get("volume_level"):
             self._attr_volume_level = volume
 
