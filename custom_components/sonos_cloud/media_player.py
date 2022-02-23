@@ -130,7 +130,6 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
             "appId": "jjlawren.home-assistant.sonos_cloud",
         }
         devices = [self.unique_id]
-        _LOGGER.debug("Playing %s on %s", media_id, self.name)
 
         if extra := kwargs.get(ATTR_MEDIA_EXTRA):
             if extra.get("play_on_bonded"):
@@ -159,6 +158,7 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
 
         for device in devices:
             url = AUDIO_CLIP_URI.format(device=device)
+            _LOGGER.debug("Playing on %s (%s): %s", self.name, device, data)
             requests.append(session.async_request("post", url, json=data))
         results = await asyncio.gather(*requests, return_exceptions=True)
         for result in results:
