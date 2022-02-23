@@ -58,6 +58,7 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
         self._attr_unique_id = player["id"]
         self._attr_volume_level = 0
         self.zone_devices = player["deviceIds"]
+        self.last_call = None
 
     async def async_added_to_hass(self):
         """Complete entity setup."""
@@ -101,7 +102,14 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
         self._attr_volume_level = volume
 
     async def async_media_play(self) -> None:
-        """Stub to draw play icon on media control card."""
+        """Replay last clip."""
+        if not self.last_call:
+            _LOGGER.debug("No previous clip found for %s", self.name)
+            return
+
+        media_id, kwargs = self.last_call
+        _LOGGER.debug("Replaying last clip on %s: %s / %s", self.name, media_id, kwargs)
+        await self.async_play_media(None, media_id, **kwargs)
 
     async def async_play_media(
         self, media_type: str, media_id: str, **kwargs: Any
@@ -143,6 +151,8 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
 
         if media_id != "CHIME":
             data["streamUrl"] = media_id
+
+        self.last_call = (media_id, kwargs)
 
         session = self.hass.data[DOMAIN][SESSION]
         requests = []
