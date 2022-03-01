@@ -15,7 +15,6 @@ from homeassistant.components.media_player.const import (
     ATTR_MEDIA_EXTRA,
     MEDIA_CLASS_DIRECTORY,
     SUPPORT_BROWSE_MEDIA,
-    SUPPORT_PLAY,
     SUPPORT_PLAY_MEDIA,
     SUPPORT_VOLUME_SET,
 )
@@ -58,7 +57,6 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
         self._attr_unique_id = player["id"]
         self._attr_volume_level = 0
         self.zone_devices = player["deviceIds"]
-        self.last_call = None
 
     async def async_added_to_hass(self):
         """Complete entity setup."""
@@ -81,12 +79,7 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     @property
     def supported_features(self) -> int:
         """Flag media player features that are supported."""
-        return (
-            SUPPORT_BROWSE_MEDIA
-            | SUPPORT_PLAY
-            | SUPPORT_PLAY_MEDIA
-            | SUPPORT_VOLUME_SET
-        )
+        return SUPPORT_BROWSE_MEDIA | SUPPORT_PLAY_MEDIA | SUPPORT_VOLUME_SET
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -100,16 +93,6 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     async def async_set_volume_level(self, volume: float) -> None:
         """Set the volume level."""
         self._attr_volume_level = volume
-
-    async def async_media_play(self) -> None:
-        """Replay last clip."""
-        if not self.last_call:
-            _LOGGER.debug("No previous clip found for %s", self.name)
-            return
-
-        media_id, kwargs = self.last_call
-        _LOGGER.debug("Replaying last clip on %s: %s / %s", self.name, media_id, kwargs)
-        await self.async_play_media(None, media_id, **kwargs)
 
     async def async_play_media(
         self, media_type: str, media_id: str, **kwargs: Any
@@ -150,8 +133,6 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
 
         if media_id != "CHIME":
             data["streamUrl"] = media_id
-
-        self.last_call = (media_id, kwargs)
 
         session = self.hass.data[DOMAIN][SESSION]
         requests = []
