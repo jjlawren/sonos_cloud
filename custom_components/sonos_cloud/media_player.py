@@ -9,14 +9,12 @@ from homeassistant.components import media_source
 from homeassistant.components.media_player import (
     BrowseMedia,
     MediaPlayerEntity,
+    MediaPlayerEntityFeature,
     async_process_play_media_url,
 )
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_EXTRA,
     MEDIA_CLASS_DIRECTORY,
-    SUPPORT_BROWSE_MEDIA,
-    SUPPORT_PLAY_MEDIA,
-    SUPPORT_VOLUME_SET,
 )
 from homeassistant.components.media_player.errors import BrowseError
 from homeassistant.components.sonos.const import DOMAIN as SONOS_DOMAIN
@@ -51,6 +49,12 @@ async def async_setup_entry(
 class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     """Representation of a Sonos Cloud entity."""
 
+    _attr_supported_features = (
+        MediaPlayerEntityFeature.BROWSE_MEDIA
+        | MediaPlayerEntityFeature.PLAY_MEDIA
+        | MediaPlayerEntityFeature.VOLUME_SET
+    )
+
     def __init__(self, player: dict[str, Any]):
         """Initializle the entity."""
         self._attr_name = player["name"]
@@ -75,11 +79,6 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
     def state(self) -> str:
         """Return the state of the entity."""
         return STATE_IDLE
-
-    @property
-    def supported_features(self) -> int:
-        """Flag media player features that are supported."""
-        return SUPPORT_BROWSE_MEDIA | SUPPORT_PLAY_MEDIA | SUPPORT_VOLUME_SET
 
     @property
     def device_info(self) -> DeviceInfo:

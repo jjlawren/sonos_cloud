@@ -2,7 +2,7 @@
   "name": "Sonos Cloud",
   "country": "US",
   "domains": ["media_player"],
-  "homeassistant": "2022.3.0",
+  "homeassistant": "2022.5.0",
   "render_readme": true,
   "iot_class": "Cloud Polling"
 }

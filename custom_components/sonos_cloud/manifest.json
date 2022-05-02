@@ -9,7 +9,7 @@
   "zeroconf": [],
   "homekit": {},
   "dependencies": [
-    "http"
+    "auth"
   ],
   "after_dependencies": [
     "media_source",
