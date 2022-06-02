@@ -3,15 +3,13 @@ from base64 import b64encode
 import logging
 from typing import cast
 
-from homeassistant.helpers import config_entry_oauth2_flow
+from homeassistant.components.application_credentials import AuthImplementation
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class CustomHeadersLocalOAuth2Implementation(
-    config_entry_oauth2_flow.LocalOAuth2Implementation
-):
+class CustomHeadersLocalOAuth2Implementation(AuthImplementation):
     """Subclass which overrides token requests to add custom headers."""
 
     async def _token_request(self, data: dict) -> dict:

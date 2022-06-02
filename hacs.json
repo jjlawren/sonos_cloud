@@ -1,6 +1,6 @@
 {
   "name": "Sonos Cloud",
   "country": "US",
-  "homeassistant": "2022.5.0",
+  "homeassistant": "2022.6.0",
   "render_readme": true
 }
