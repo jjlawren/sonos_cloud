@@ -30,6 +30,6 @@ class OAuth2FlowHandler(
         await self.async_set_unique_id(DOMAIN)
 
         if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
+            return self.async_abort(reason="already_configured")
 
         return await super().async_step_user(user_input)
