@@ -16,15 +16,28 @@ Both methods will require a restart of Home Assistant before you can configure t
 You will need to create an account on the [Sonos Developer site](https://developer.sonos.com), and then create a new Control Integration. Provide a display name and description, provide a Key Name, and save the integration. It is not necessary to set a Redirect URI or callback URL. Save the Key and Secret values for the integration configuration.
 
 # Configuration
+<details>
+  <summary><i>** Click here if using Home Assistant 2022.5 or below **</i></summary>
+  <hr/>
+  Older versions of Home Assistant do not support setting application credentials in the frontend.
 
-Add an entry to your `configuration.yaml` using the Key and Secret from your Sonos app:
-```yaml
-sonos_cloud:
-  client_id: <YOUR_APP_KEY>
-  client_secret: <YOUR_APP_SECRET>
-```
+  Add an entry to your `configuration.yaml` using the Key and Secret from your Sonos app:
+  ```yaml
+  sonos_cloud:
+    client_id: <YOUR_APP_KEY>
+    client_secret: <YOUR_APP_SECRET>
+  ```
+  You will need to restart Home Assistant if adding credentials while already running.
 
-On the Integrations page in Home Assistant, add a new "Sonos Cloud" integration. You will be redirected to the Sonos website to login with your "normal" Sonos username and password (_not_ your Sonos Developer login). You will receive a prompt saying "Allow <YOUR_APP_NAME> to control your Sonos system". Accept this and the integration will complete configuration.
+  **Note**: This is no longer necessary in 2022.6 and later with Sonos Cloud release 0.3.0.
+  <hr/>
+</details>
+
+[![Open your Home Assistant instance and start setting up sonos_cloud.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=sonos_cloud)
+
+On the Integrations page in Home Assistant, add a new "Sonos Cloud" integration. You will need to first provide your application credentials obtained from the Sonos Developer site above. The Key should be used as the `Client ID`, and the Secret as the `Client Secret`.
+
+You will then be redirected to the Sonos website to login with your "normal" Sonos username and password (_not_ your Sonos Developer login). You will receive a prompt saying "Allow <YOUR_APP_NAME> to control your Sonos system". Accept this and the integration will complete configuration.
 
 # Usage
 
