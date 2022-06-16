@@ -52,7 +52,9 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
         ),
     )
 
-    _LOGGER.warning("Application Credentials have been imported and can be removed from configuration.yaml")
+    _LOGGER.warning(
+        "Application Credentials have been imported and can be removed from configuration.yaml"
+    )
 
     return True
 
