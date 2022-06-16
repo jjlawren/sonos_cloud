@@ -13,6 +13,7 @@ from homeassistant.components.application_credentials import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
 
 from .const import DOMAIN, PLAYERS, SESSION
@@ -69,12 +70,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     url = "https://api.ws.sonos.com/control/api/v1/households"
     result = await session.async_request("get", url)
+    if result.status >= 400:
+        body = await result.text()
+        _LOGGER.error(
+            "Household request failed (%s): %s",
+            result.status,
+            body,
+        )
+        raise ConfigEntryNotReady
+
     json = await result.json()
     households = json.get("households")
 
     async def async_get_available_players(household):
         url = f"https://api.ws.sonos.com/control/api/v1/households/{household}/groups"
         result = await session.async_request("get", url)
+        if result.status >= 400:
+            body = await result.text()
+            _LOGGER.error(
+                "Requesting devices failed (%s): %s",
+                result.status,
+                body,
+            )
+            raise ConfigEntryNotReady
+
         json = await result.json()
         _LOGGER.debug("Result: %s", json)
         all_players = json["players"]

@@ -142,6 +142,15 @@ class SonosCloudMediaPlayerEntity(MediaPlayerEntity, RestoreEntity):
             requests.append(session.async_request("post", url, json=data))
         results = await asyncio.gather(*requests, return_exceptions=True)
         for result in results:
+            if result.status >= 400:
+                body = await result.text()
+                _LOGGER.error(
+                    "Play request failed (%s): %s",
+                    result.status,
+                    body,
+                )
+                continue
+
             json = await result.json()
             _LOGGER.debug("Response for %s: %s", result.url, json)
 
