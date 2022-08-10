@@ -41,7 +41,7 @@ You will then be redirected to the Sonos website to login with your "normal" Son
 
 # Usage
 
-The integration will create new `media_player` entities for each Sonos device in your household. These are created in order to use the `tts.<platform>_say` and `media_player.play_media` services to play the clips.
+The integration will create new `media_player` entities for each Sonos device in your household. You must reference these new `media_player` entities in order to use the `tts.<platform>_say` and `media_player.play_media` services to play the clips.
 
 ## Media Browser & Media Source
 
@@ -112,6 +112,10 @@ data:
 # Limitations
 
 If you encounter issues playing audio when using this integration, it may be related to one of the following reasons.
+
+## Use the new Sonos entities
+
+If audio playback does not resume after playing a sound, you may have selected the incorrect entity. The integration will create new `media_player` entities for each Sonos device in your household. You must select these new entities as the target for playback, not the original entities.
 
 ## Device support
 
