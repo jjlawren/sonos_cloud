@@ -38,7 +38,6 @@ PLATFORMS = ["media_player"]
 async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Set up the Sonos Cloud component."""
     hass.data[DOMAIN] = {}
-    hass.data[DOMAIN][PLAYERS] = []
 
     if DOMAIN not in config:
         return True
@@ -61,6 +60,8 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Sonos Cloud from a config entry."""
+    hass.data[DOMAIN][PLAYERS] = []
+
     implementation = (
         await config_entry_oauth2_flow.async_get_config_entry_implementation(
             hass, entry
