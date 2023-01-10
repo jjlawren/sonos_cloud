@@ -72,7 +72,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][SESSION] = session
 
     url = "https://api.ws.sonos.com/control/api/v1/households"
-    result = await session.async_request("get", url)
+    try:
+        result = await session.async_request("get", url)
+    except OSError as exc:
+        _LOGGER.error("Connection error requesting households: %s", exc)
+        raise ConfigEntryNotReady from exc
+
     if result.status >= 400:
         body = await result.text()
         _LOGGER.error(
@@ -87,7 +92,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def async_get_available_players(household: str) -> list[dict]:
         url = f"https://api.ws.sonos.com/control/api/v1/households/{household}/groups"
-        result = await session.async_request("get", url)
+        try:
+            result = await session.async_request("get", url)
+        except OSError as exc:
+            _LOGGER.error("Connection error requesting players: %s", exc)
+            raise ConfigEntryNotReady from exc
         if result.status >= 400:
             body = await result.text()
             _LOGGER.error(
