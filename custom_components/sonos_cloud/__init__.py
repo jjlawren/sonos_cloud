@@ -85,7 +85,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     json = await result.json()
     households = json.get("households")
 
-    async def async_get_available_players(household):
+    async def async_get_available_players(household: str) -> list[dict]:
         url = f"https://api.ws.sonos.com/control/api/v1/households/{household}/groups"
         result = await session.async_request("get", url)
         if result.status >= 400:
@@ -95,7 +95,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 result.status,
                 body,
             )
-            raise ConfigEntryNotReady
+            return []
 
         json = await result.json()
         _LOGGER.debug("Result: %s", json)
@@ -114,13 +114,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     for household in households:
         household_id = household["id"]
-        players = await async_get_available_players(household_id)
-        _LOGGER.debug(
-            "Adding players for household %s: %s",
-            household_id,
-            [player["name"] for player in players],
-        )
-        hass.data[DOMAIN][PLAYERS].extend(players)
+        if players := await async_get_available_players(household_id):
+            _LOGGER.debug(
+                "Adding players for household %s: %s",
+                household_id,
+                [player["name"] for player in players],
+            )
+            hass.data[DOMAIN][PLAYERS].extend(players)
+
+    if not hass.data[DOMAIN][PLAYERS]:
+        _LOGGER.error("No players returned from household(s): %s", households)
+        raise ConfigEntryNotReady
 
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
