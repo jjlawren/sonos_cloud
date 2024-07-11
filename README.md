@@ -13,7 +13,7 @@ This API requires audio files to be in `.mp3` or `.wav` format and to have publi
 
 Both methods will require a restart of Home Assistant before you can configure the integration further.
 
-You will need to create an account on the [Sonos Developer site](https://developer.sonos.com), and then create a new Control Integration. Provide a display name and description, provide a Key Name, and save the integration. It is not necessary to set a Redirect URI or callback URL. Save the Key and Secret values for the integration configuration.
+You will need to create an account on the [Sonos Developer site](https://developer.sonos.com), and then [create a new Control Integration](https://integration.sonos.com/integrations). Provide a display name and description, provide a Key Name, and save the integration. It is not necessary to set a Redirect URI or callback URL. Save the Key and Secret values for the integration configuration.
 
 # Configuration
 <details>
