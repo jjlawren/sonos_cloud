@@ -13,9 +13,7 @@ from homeassistant.components.media_player import (
     MediaPlayerEntityFeature,
     async_process_play_media_url,
 )
-from homeassistant.components.media_player.const import (
-    ATTR_MEDIA_EXTRA,
-)
+from homeassistant.components.media_player.const import ATTR_MEDIA_EXTRA
 from homeassistant.components.media_player.errors import BrowseError
 from homeassistant.components.sonos.const import DOMAIN as SONOS_DOMAIN
 from homeassistant.config_entries import ConfigEntry
