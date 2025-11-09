@@ -8,14 +8,12 @@ from typing import Any
 from homeassistant.components import media_source
 from homeassistant.components.media_player import (
     BrowseMedia,
+    MediaClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
     async_process_play_media_url,
 )
-from homeassistant.components.media_player.const import (
-    ATTR_MEDIA_EXTRA,
-    MEDIA_CLASS_DIRECTORY,
-)
+from homeassistant.components.media_player.const import ATTR_MEDIA_EXTRA
 from homeassistant.components.media_player.errors import BrowseError
 from homeassistant.components.sonos.const import DOMAIN as SONOS_DOMAIN
 from homeassistant.config_entries import ConfigEntry
@@ -194,7 +192,7 @@ async def root_payload(
 
     return BrowseMedia(
         title="Sonos Cloud",
-        media_class=MEDIA_CLASS_DIRECTORY,
+        media_class=MediaClass.DIRECTORY,
         media_content_id="",
         media_content_type="root",
         can_play=False,
